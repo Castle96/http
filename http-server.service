@@ -1,0 +1,37 @@
+[Unit]
+Description=Rust HTTPS Server with Let's Encrypt
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/http-server
+
+# Load environment variables
+EnvironmentFile=/opt/http-server/.env
+
+# Restart on failure
+Restart=on-failure
+RestartSec=5s
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/http-server/certs
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=http-server
+
+ExecStart=/opt/http-server/target/release/http_server
+
+# Graceful shutdown timeout
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=multi-user.target
